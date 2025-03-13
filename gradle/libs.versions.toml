@@ -1,5 +1,3 @@
 [versions]
-groovy = "3.0.17"
 
 [plugins]
-groovy = { id = "groovy" }

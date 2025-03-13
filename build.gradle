@@ -1,29 +1,78 @@
 plugins {
-    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'java-library'
     id 'maven-publish'
     id 'signing'
 }
 
-group = 'io.github.azmostafa'
-version = '1.0.0'
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+gradlePlugin {
+    plugins {
+        create("dimensPlugin") {
+            id = "io.github.azmostafa.dimens"
+            implementationClass = "io.github.azmostafa.DimensPlugin"
+        }
+    }
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            groupId = 'io.github.azmostafa'
             artifactId = 'redimens-task'
+            version = '1.0.1'
+
+            artifact javadocJar
+            artifact sourcesJar
+
+            pom {
+                name = 'Redimens Task'
+                description = 'Generates dimens.xml files for multiple screen sizes.'
+                url = 'https://github.com/azmostafa/task-gradle-redimens'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'azmostafa'
+                        name = 'AMostafa'
+                        email = 'amostafa_isg@outlook.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/azmostafa/task-gradle-redimens.git'
+                    developerConnection = 'scm:git:ssh://github.com/azmostafa/task-gradle-redimens.git'
+                    url = 'https://github.com/azmostafa/task-gradle-redimens'
+                }
+            }
         }
     }
 
     repositories {
         maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            name = "Sonatype"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username = project.findProperty("ossrhUsername") ?: ""
-                password = project.findProperty("ossrhPassword") ?: ""
+                username = findProperty("ossrhUsername") ?: ""
+                password = findProperty("ossrhPassword") ?: ""
             }
         }
     }
 }
 
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
+}
